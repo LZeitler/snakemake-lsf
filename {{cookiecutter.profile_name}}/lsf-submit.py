@@ -14,6 +14,7 @@ cluster parameters:
       Overriden by resources.mem_mb, if present.
       `resources`
     - `queue`: Which queue to run job on
+    - `walltime`: Amount of walltime for the job
     - `logdir`: Where to log stdout/stderr from cluster command
     - `output`: Name of stdout logfile
     - `error`: Name of stderr logfile
@@ -89,15 +90,19 @@ jobinfo_cmd = generate_jobinfo_command(job_properties)
 
 resources_cmd = generate_resources_command(job_properties)
 
+walltime = cluster.get("walltime", "")
+walltime_cmd = "-W {}".format(walltime) if walltime else "00:10"
+
 queue = cluster.get("queue", "")
 queue_cmd = "-q {}".format(queue) if queue else ""
 
 cluster_cmd = " ".join(sys.argv[1:-1])
 
 # command to submit to cluster
-submit_cmd = "bsub {resources} {job_info} {queue} {cluster} {jobscript}".format(
+submit_cmd = "bsub {resources} {job_info} {walltime} {queue} {cluster} {jobscript}".format(
     resources=resources_cmd,
     job_info=jobinfo_cmd,
+    walltime=waltime_cmd,
     queue=queue_cmd,
     cluster=cluster_cmd,
     jobscript=jobscript,
