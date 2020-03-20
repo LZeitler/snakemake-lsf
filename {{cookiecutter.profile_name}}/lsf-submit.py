@@ -15,6 +15,7 @@ cluster parameters:
       `resources`
     - `queue`: Which queue to run job on
     - `walltime`: Amount of walltime for the job
+    - `scratch`: Size of $TMPDIR (local scratch)
     - `logdir`: Where to log stdout/stderr from cluster command
     - `output`: Name of stdout logfile
     - `error`: Name of stderr logfile
@@ -40,9 +41,10 @@ def generate_resources_command(job_properties: dict) -> str:
     mem_mb = resources.get(
         "mem_mb", cluster.get("mem_mb", int({{cookiecutter.default_mem_mb}}))
     )
+    scratch = cluster.get("scratch", int({{cookiecutter.default_scratch}}))
     return (
         "-M {mem_mb} -n {threads} "
-        "-R 'select[mem>{mem_mb}] rusage[mem={mem_mb}] span[hosts=1]'"
+        "-R 'select[mem>{mem_mb}] rusage[mem={mem_mb}, scratch={scratch}] span[hosts=1]'"
     ).format(mem_mb=mem_mb, threads=threads)
 
 
